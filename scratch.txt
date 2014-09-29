@@ -1,0 +1,10 @@
+## Command line tool
+
+** ONLY VIM FOR NOW **
+
+Ruby switch_dotfiles.rb stevemartin
+
+1. checks out dotfiles from git to a .switch_dotfiles folder
+  * eg: .switch_dotfiles/stevemartin
+2. Symlinks ~/.vim folder and ~/.vimrc from .switch_dotfiles/stevemartin folder
+3. Runs ./.switch_dotfiles/stevemartin/switch.sh to build the user's personalized dotfile config

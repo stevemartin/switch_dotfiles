@@ -1,0 +1,77 @@
+#! /usr/bin/env ruby
+
+require 'fileutils'
+require 'git'
+require 'pry'
+
+class SwitchDotfiles
+
+  DOTFILES = {
+    "stevemartin" => {
+      repo: "git@github.com:stevemartin/dotfiles"
+    },
+    "ed" => {
+      repo: "git@github.com:seddy/Scripts"
+    }
+  }
+
+  def initialize(user)
+    @user = user
+
+    init_cache_folder
+    fetch_dotfiles
+    link_dotfiles
+    #run_user
+  end
+
+  def init_cache_folder
+    ## Make switch_dotfiles own home folder
+    FileUtils.mkdir_p(cache_folder_path) unless Dir.exists?(cache_folder_path)
+  end
+
+  def fetch_dotfiles
+    if Dir.exists?(user_dotfiles_cache_path)
+      repo = Git.open(user_dotfiles_cache_path)
+      repo.pull
+    else
+      Git.clone(user_dotfiles_remote_repo, user_dotfiles_cache_path)
+    end
+    `cd #{user_dotfiles_cache_path} && git submodule update --init`
+  end
+
+  def link_dotfiles
+    `#{user_setup_dotfiles}`if File.exist?(user_setup_dotfiles)
+  end
+
+  private
+  def user_setup_dotfiles
+    "#{user_dotfiles_cache_path}/setup_dotfiles"
+  end
+
+  def user_dot_vim_cache
+    "#{user_dotfiles_cache_path}/.vim"
+  end
+
+  def user_dot_vimrc_cache
+    "#{user_dotfiles_cache_path}/.vimrc"
+  end
+
+  def user_dotfiles_remote_repo
+    DOTFILES[@user][:repo]
+  end
+
+  def cache_folder_path
+    "#{users_home}/.switch_dotfiles"
+  end
+
+  def user_dotfiles_cache_path
+    "#{cache_folder_path}/#{@user}"
+  end
+
+  def users_home
+    File.expand_path('~')
+  end
+end
+
+github_user = ARGV[0]
+SwitchDotfiles.new(github_user)
