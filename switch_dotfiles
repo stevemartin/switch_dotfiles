@@ -6,6 +6,7 @@ require 'pry'
 
 class SwitchDotfiles
 
+  ## This could ultimately be stored in a config file
   DOTFILES = {
     "stevemartin" => {
       repo: "git@github.com:stevemartin/dotfiles"
